@@ -1,6 +1,13 @@
 import { useState } from "react";
 import "./App.css";
 
+enum FetchState {
+  Idle,
+  Loading,
+  Success,
+  Error,
+}
+
 type SearchResult<T = unknown> = {
   results: Array<T>;
   meta: { type: string; q: string; count: number };
@@ -18,9 +25,7 @@ type SearchMatch = {
 };
 
 function App() {
-  const [fetchState, setFetchState] = useState<"READY" | "LOADING" | "ERROR">(
-    "READY"
-  );
+  const [fetchState, setFetchState] = useState<FetchState>(FetchState.Idle);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] =
     useState<SearchResult<SearchMatch> | null>(null);
@@ -28,13 +33,13 @@ function App() {
   const handleSearch = async () => {
     if (searchTerm) {
       try {
-        setFetchState("LOADING");
+        setFetchState(FetchState.Loading);
         const results = await fetchSearchResults(searchTerm);
         setSearchResults(results);
-        setFetchState("READY");
+        setFetchState(FetchState.Success);
       } catch (error) {
         console.error("An error occurred:", error);
-        setFetchState("ERROR");
+        setFetchState(FetchState.Error);
       }
     }
   };
@@ -60,9 +65,9 @@ function App() {
         <button onClick={handleSearch}>Search</button>
       </div>
 
-      {fetchState == "LOADING" && <div>Executing Search...</div>}
+      {fetchState === FetchState.Loading && <div>Executing Search...</div>}
 
-      {fetchState == "READY" && (
+      {fetchState === FetchState.Success && (
         <div className="results-container" style={{ borderTop: "1px" }}>
           {searchResults?.results.length === 0 ? (
             <p>No results found.</p>
@@ -76,7 +81,7 @@ function App() {
         </div>
       )}
 
-      {fetchState == "ERROR" && <div>An error occurred</div>}
+      {fetchState === FetchState.Error && <div>An error occurred</div>}
     </div>
   );
 }
