@@ -1,3 +1,7 @@
+/**
+ * See listly API V4 Documentation
+ */
+
 export type SearchResult<T = unknown> = {
   results: Array<T>;
   meta: { type: string; q: string; count: number };
