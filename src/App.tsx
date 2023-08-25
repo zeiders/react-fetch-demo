@@ -33,6 +33,12 @@ function App() {
     }
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Tab" || event.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   return (
     <div className="App">
       <div className="search-container">
@@ -41,6 +47,7 @@ function App() {
           placeholder="Enter your search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
         <button onClick={handleSearch}>Search</button>
       </div>
