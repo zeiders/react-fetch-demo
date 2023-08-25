@@ -1,5 +1,10 @@
 import { useState } from "react";
 import "./App.css";
+import {
+  SearchMatch,
+  SearchResult,
+  fetchSearchResults,
+} from "./apis/videoSearchApi";
 
 enum FetchState {
   Idle,
@@ -7,22 +12,6 @@ enum FetchState {
   Success,
   Error,
 }
-
-type SearchResult<T = unknown> = {
-  results: Array<T>;
-  meta: { type: string; q: string; count: number };
-};
-type SearchMatch = {
-  media_type: string;
-  media_source: string;
-  media_id: string;
-  name: string;
-  description: string;
-  image: string;
-  preview_image: string;
-  tags: Array<string>;
-  url: string;
-};
 
 function App() {
   const [fetchState, setFetchState] = useState<FetchState>(FetchState.Idle);
@@ -42,15 +31,6 @@ function App() {
         setFetchState(FetchState.Error);
       }
     }
-  };
-
-  const fetchSearchResults = async (
-    term: string
-  ): Promise<SearchResult<SearchMatch>> => {
-    const apiUrl = `http://list.ly/api/v4/search/video?q=${term}`;
-    const response = await fetch(apiUrl);
-    const data = await response.json();
-    return data;
   };
 
   return (
