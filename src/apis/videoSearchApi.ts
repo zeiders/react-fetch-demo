@@ -16,10 +16,11 @@ export type SearchMatch = {
 };
 
 export const fetchSearchResults = async (
-  term: string
+  term: string,
+  signal: AbortSignal
 ): Promise<SearchResult<SearchMatch>> => {
   const apiUrl = `http://list.ly/api/v4/search/video?q=${term}`;
-  const response = await fetch(apiUrl);
+  const response = await fetch(apiUrl, { signal });
   const data = await response.json();
   return data;
 };

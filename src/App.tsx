@@ -18,17 +18,38 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] =
     useState<SearchResult<SearchMatch> | null>(null);
+  const [abortController, setAbortController] =
+    useState<AbortController | null>(null);
 
   const handleSearch = async () => {
     if (searchTerm) {
+      if (abortController) {
+        // Abort the ongoing request if there is one
+        abortController.abort();
+      }
+
+      const newAbortController = new AbortController();
+      setAbortController(newAbortController);
+      setFetchState(FetchState.Loading);
+
       try {
-        setFetchState(FetchState.Loading);
-        const results = await fetchSearchResults(searchTerm);
+        const results = await fetchSearchResults(
+          searchTerm,
+          newAbortController.signal
+        );
         setSearchResults(results);
         setFetchState(FetchState.Success);
-      } catch (error) {
-        console.error("An error occurred:", error);
-        setFetchState(FetchState.Error);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        if (error.name === "AbortError") {
+          // The fetch request was aborted, ignore the error
+          console.info("A fetch was aborted:", error);
+        } else {
+          console.error("An error occurred:", error);
+          setFetchState(FetchState.Error);
+        }
+      } finally {
+        setAbortController(null);
       }
     }
   };
