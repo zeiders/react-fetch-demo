@@ -5,6 +5,7 @@ import {
   SearchResult,
   fetchSearchResults,
 } from "./apis/videoSearchApi";
+import { SearchItemList } from "./components/SearchItemList";
 
 enum FetchState {
   Idle,
@@ -39,6 +40,7 @@ function App() {
         );
         setSearchResults(results);
         setFetchState(FetchState.Success);
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         if (error.name === "AbortError") {
@@ -80,11 +82,7 @@ function App() {
           {searchResults?.results.length === 0 ? (
             <p>No results found.</p>
           ) : (
-            <ul>
-              {searchResults?.results.map((result, index) => (
-                <li key={index}>{result.name}</li>
-              ))}
-            </ul>
+            <SearchItemList items={searchResults} />
           )}
         </div>
       )}
